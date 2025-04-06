@@ -1,110 +1,62 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-
-import "./App.css";
-
-const buttonStyle = {
-  width: "250px",
-  textTransform: "none",
-  borderWidth: "3px",
-  borderStyle: "solid",
-  borderRadius: "20px",
-  fontSize: 28,
-  marginTop: "10px",
-};
+import React, { useState } from 'react';
+import NotesPage from './NotesPage';
+import './App.css';
+import { Button, TextField } from '@mui/material';
 
 function App() {
-  const [form, setForm] = useState({ username: "", password: "" });
-  const navigate = useNavigate();
-
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleRegister = () => {
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
-    if (form.username in users) {
-      alert("User already exists");
-      return;
-    }
-    // Save the user (username & password) in JSON
-    users[form.username] = form.password;
-    localStorage.setItem("users", JSON.stringify(users));
-    // Set the current active user
-    localStorage.setItem("currentUser", form.username);
-    console.log("Registered:", form);
-    navigate("/notes");
-  };
+  const [username, setUsername] = useState('');
+  const [tempUser, setTempUser] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleLogin = () => {
-    const users = JSON.parse(localStorage.getItem("users") || "{}");
-    if (form.username in users) {
-      // Login is based on username only; password is not verified
-      localStorage.setItem("currentUser", form.username);
-      console.log("Logged in:", form);
-      navigate("/notes");
-    } else {
-      alert("User not registered");
-    }
+    const userData = { username: tempUser, password };
+    console.log('User data:', JSON.stringify(userData));
+    setUsername(tempUser);
+    setIsLoggedIn(true);
   };
 
   return (
-    <>
-      <video autoPlay loop muted playsInline className="bg-video">
-        <source src="/matrix-bg-1.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
+    <div className="App">
+      <video autoPlay muted loop id="bg-video">
+        <source src="matrix-bg-1.mp4" type="video/mp4" />
       </video>
-
-      <div id="main">
-        <Typography
-          variant="h2"
-          color="initial"
-          sx={{ color: "white", background: "black", borderRadius: "20px" }}
-        >
-          Secure Notes
-        </Typography>
-
-        <TextField
-          label="Username"
-          name="username"
-          variant="outlined"
-          sx={{ input: { color: "white" }, background: "black", mt: 2 }}
-          fullWidth
-          onChange={handleChange}
-          value={form.username}
-        />
-
-        <TextField
-          label="Password"
-          name="password"
-          type="password"
-          variant="outlined"
-          sx={{ input: { color: "white" }, background: "black", mt: 2 }}
-          fullWidth
-          onChange={handleChange}
-          value={form.password}
-        />
-
-        <Button
-          variant="contained"
-          color="primary"
-          sx={buttonStyle}
-          onClick={handleRegister}
-        >
-          Register
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          sx={buttonStyle}
-          onClick={handleLogin}
-        >
-          Login
-        </Button>
+      <div className="overlay">
+        {!isLoggedIn ? (
+          <div className="login-box">
+            <h1>Secure Notes</h1>
+            <TextField
+              label="Username"
+              variant="outlined"
+              fullWidth
+              value={tempUser}
+              onChange={(e) => setTempUser(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Password"
+              variant="outlined"
+              type="password"
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleLogin}
+              fullWidth
+            >
+              Login / Register
+            </Button>
+          </div>
+        ) : (
+          // ✅ make sure this is JSX (not object)
+          <NotesPage username={username} onLogout={() => setIsLoggedIn(false)} />
+        )}
       </div>
-    </>
+    </div>
   );
 }
 

@@ -1,75 +1,106 @@
 import React, { useState } from 'react';
-import { Container, Typography, Fab, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, Card, CardContent, Chip, Grid } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { Button, TextField, MenuItem } from '@mui/material';
 
-function App() {
-  const [notes, setNotes] = useState([
-    {
-      title: 'Acc_Details',
-      category: 'Financial',
-      content: 'Bank....',
-    },
-  ]);
-  const [open, setOpen] = useState(false);
-  const [newNote, setNewNote] = useState({ title: '', category: '', content: '' });
+const labelOptions = ['Personal', 'College', 'Work', 'Other'];
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    setNewNote({ title: '', category: '', content: '' });
-    setOpen(false);
+const NotesPage = ({ username, onLogout }) => {
+  const [notes, setNotes] = useState([]);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [label, setLabel] = useState('Personal');
+  const [showPopup, setShowPopup] = useState(false);
+
+  const handleAddNote = () => {
+    if (!title.trim() || !content.trim()) return;
+    setNotes([...notes, { title, content, label }]);
+    setTitle('');
+    setContent('');
+    setLabel('Personal');
+    setShowPopup(false);
   };
 
-  const handleChange = (e) => {
-    setNewNote({ ...newNote, [e.target.name]: e.target.value });
-  };
-
-  const handleSave = () => {
-    if (newNote.title && newNote.category && newNote.content) {
-      setNotes([...notes, newNote]);
-      handleClose();
-    }
+  const handleDeleteNote = (index) => {
+    const newNotes = notes.filter((_, i) => i !== index);
+    setNotes(newNotes);
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Notes for Ritu_Sharma
-      </Typography>
+    <div className="notes-page">
+      <div className="header">
+        <h2>Welcome, {username}!</h2>
+        <button className="logout-btn" onClick={onLogout}>
+            Logout
+        </button>
 
-      <Grid container spacing={2}>
-        {notes.map((note, idx) => (
-          <Grid item xs={12} sm={6} key={idx}>
-            <Card variant="outlined">
-              <CardContent>
-                <Typography variant="h6">{note.title}</Typography>
-                <Chip label={note.category} size="small" sx={{ my: 1 }} />
-                <Typography variant="body2" color="text.secondary">
-                  {note.content}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
+      </div>
+
+      <div className="add-note-btn-container">
+        <button className="add-note-btn" onClick={() => setShowPopup(true)}>
+          ＋ Add Note
+        </button>
+      </div>
+
+      {showPopup && (
+        <div className="popup-overlay">
+          <div className="popup-card">
+            <TextField
+              label="Title"
+              variant="outlined"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              fullWidth
+              sx={{ mb: 1 }}
+            />
+            <TextField
+              label="Content"
+              variant="outlined"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              fullWidth
+              multiline
+              rows={3}
+              sx={{ mb: 1 }}
+            />
+            <TextField
+              label="Label"
+              select
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              fullWidth
+              sx={{ mb: 2 }}
+            >
+              {labelOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+            <div className="popup-actions">
+              <Button variant="contained" onClick={handleAddNote}>
+                Save
+              </Button>
+              <Button variant="text" color="error" onClick={() => setShowPopup(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="notes-list">
+        {notes.map((note, index) => (
+          <div className="note-card" key={index}>
+            <div className="note-label">{note.label}</div>
+            <h3>{note.title}</h3>
+            <p>{note.content}</p>
+            <button className="delete-btn" onClick={() => handleDeleteNote(index)}>
+              🗑️
+            </button>
+          </div>
         ))}
-      </Grid>
-
-      <Fab color="primary" aria-label="add" onClick={handleOpen} sx={{ position: 'fixed', bottom: 24, right: 24 }}>
-        <AddIcon />
-      </Fab>
-
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add New Note</DialogTitle>
-        <DialogContent>
-          <TextField autoFocus margin="dense" name="title" label="Title" fullWidth variant="outlined" onChange={handleChange} />
-          <TextField margin="dense" name="category" label="Category" fullWidth variant="outlined" onChange={handleChange} />
-          <TextField margin="dense" name="content" label="Content" multiline rows={4} fullWidth variant="outlined" onChange={handleChange} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave}>Save</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+      </div>
+    </div>
   );
-}
+};
 
-export default App;
+export default NotesPage;
