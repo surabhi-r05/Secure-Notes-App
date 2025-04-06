@@ -41,9 +41,8 @@ function NotesPage() {
     setNewNote({ title: "", category: "", content: "" });
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setNewNote({ ...newNote, [e.target.name]: e.target.value });
-  };
 
   const handleSave = () => {
     const updatedNotes = [...notes, newNote];

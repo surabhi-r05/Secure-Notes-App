@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { useNavigate } from "react-router-dom";
 
 import "./App.css";
 
@@ -29,10 +29,10 @@ function App() {
       alert("User already exists");
       return;
     }
-    // Save user details (username and password) in localStorage
+    // Save the user (username & password) in JSON
     users[form.username] = form.password;
     localStorage.setItem("users", JSON.stringify(users));
-    // Set current active user
+    // Set the current active user
     localStorage.setItem("currentUser", form.username);
     console.log("Registered:", form);
     navigate("/notes");
@@ -41,7 +41,7 @@ function App() {
   const handleLogin = () => {
     const users = JSON.parse(localStorage.getItem("users") || "{}");
     if (form.username in users) {
-      // Login is based on username only; password is not verified here
+      // Login is based on username only; password is not verified
       localStorage.setItem("currentUser", form.username);
       console.log("Logged in:", form);
       navigate("/notes");
