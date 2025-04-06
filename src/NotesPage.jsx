@@ -1,72 +1,49 @@
-import { useState, useEffect } from "react";
-import {
-  Fab,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Button,
-  Card,
-  CardContent,
-  Typography,
-  Grid,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import React, { useState } from 'react';
+import { Container, Typography, Fab, Dialog, DialogTitle, DialogContent, TextField, DialogActions, Button, Card, CardContent, Chip, Grid } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
-function NotesPage() {
+function App() {
+  const [notes, setNotes] = useState([
+    {
+      title: 'Acc_Details',
+      category: 'Financial',
+      content: 'Bank....',
+    },
+  ]);
   const [open, setOpen] = useState(false);
-  const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState({
-    title: "",
-    category: "",
-    content: "",
-  });
-
-  const currentUser = localStorage.getItem("currentUser");
-
-  useEffect(() => {
-    if (!currentUser) {
-      alert("No user logged in");
-      return;
-    }
-    const saved = JSON.parse(localStorage.getItem(`notes-${currentUser}`)) || [];
-    console.log("Loaded notes for", currentUser, saved);
-    setNotes(saved);
-  }, [currentUser]);
+  const [newNote, setNewNote] = useState({ title: '', category: '', content: '' });
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
+    setNewNote({ title: '', category: '', content: '' });
     setOpen(false);
-    setNewNote({ title: "", category: "", content: "" });
   };
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setNewNote({ ...newNote, [e.target.name]: e.target.value });
+  };
 
   const handleSave = () => {
-    const updatedNotes = [...notes, newNote];
-    setNotes(updatedNotes);
-    localStorage.setItem(`notes-${currentUser}`, JSON.stringify(updatedNotes));
-    handleClose();
+    if (newNote.title && newNote.category && newNote.content) {
+      setNotes([...notes, newNote]);
+      handleClose();
+    }
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <Container maxWidth="md" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom>
-        My Notes for {currentUser}
+        Notes for Ritu_Sharma
       </Typography>
 
       <Grid container spacing={2}>
-        {notes.map((note, i) => (
-          <Grid item xs={12} sm={6} md={4} key={i}>
-            <Card>
+        {notes.map((note, idx) => (
+          <Grid item xs={12} sm={6} key={idx}>
+            <Card variant="outlined">
               <CardContent>
                 <Typography variant="h6">{note.title}</Typography>
-                <Typography variant="subtitle2" color="text.secondary">
-                  {note.category}
-                </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+                <Chip label={note.category} size="small" sx={{ my: 1 }} />
+                <Typography variant="body2" color="text.secondary">
                   {note.content}
                 </Typography>
               </CardContent>
@@ -75,54 +52,24 @@ function NotesPage() {
         ))}
       </Grid>
 
-      <Fab
-        color="primary"
-        aria-label="add"
-        onClick={handleOpen}
-        sx={{ position: "fixed", bottom: 20, right: 20 }}
-      >
+      <Fab color="primary" aria-label="add" onClick={handleOpen} sx={{ position: 'fixed', bottom: 24, right: 24 }}>
         <AddIcon />
       </Fab>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Create a Note</DialogTitle>
+        <DialogTitle>Add New Note</DialogTitle>
         <DialogContent>
-          <TextField
-            name="title"
-            label="Title"
-            fullWidth
-            sx={{ mt: 1 }}
-            onChange={handleChange}
-            value={newNote.title}
-          />
-          <TextField
-            name="category"
-            label="Category / Labels"
-            fullWidth
-            sx={{ mt: 2 }}
-            onChange={handleChange}
-            value={newNote.category}
-          />
-          <TextField
-            name="content"
-            label="Content"
-            fullWidth
-            multiline
-            rows={4}
-            sx={{ mt: 2 }}
-            onChange={handleChange}
-            value={newNote.content}
-          />
+          <TextField autoFocus margin="dense" name="title" label="Title" fullWidth variant="outlined" onChange={handleChange} />
+          <TextField margin="dense" name="category" label="Category" fullWidth variant="outlined" onChange={handleChange} />
+          <TextField margin="dense" name="content" label="Content" multiline rows={4} fullWidth variant="outlined" onChange={handleChange} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSave} variant="contained">
-            Save
-          </Button>
+          <Button variant="contained" onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Container>
   );
 }
 
-export default NotesPage;
+export default App;
