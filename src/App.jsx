@@ -25,8 +25,15 @@ function App() {
 
   const handleRegister = () => {
     const users = JSON.parse(localStorage.getItem("users") || "{}");
+    if (form.username in users) {
+      alert("User already exists");
+      return;
+    }
+    // Save user details (username and password) in localStorage
     users[form.username] = form.password;
     localStorage.setItem("users", JSON.stringify(users));
+    // Set current active user
+    localStorage.setItem("currentUser", form.username);
     console.log("Registered:", form);
     navigate("/notes");
   };
@@ -34,6 +41,8 @@ function App() {
   const handleLogin = () => {
     const users = JSON.parse(localStorage.getItem("users") || "{}");
     if (form.username in users) {
+      // Login is based on username only; password is not verified here
+      localStorage.setItem("currentUser", form.username);
       console.log("Logged in:", form);
       navigate("/notes");
     } else {
@@ -78,10 +87,20 @@ function App() {
           value={form.password}
         />
 
-        <Button variant="contained" color="primary" sx={buttonStyle} onClick={handleRegister}>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={buttonStyle}
+          onClick={handleRegister}
+        >
           Register
         </Button>
-        <Button variant="contained" color="success" sx={buttonStyle} onClick={handleLogin}>
+        <Button
+          variant="contained"
+          color="success"
+          sx={buttonStyle}
+          onClick={handleLogin}
+        >
           Login
         </Button>
       </div>

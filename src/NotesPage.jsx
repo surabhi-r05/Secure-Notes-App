@@ -23,10 +23,17 @@ function NotesPage() {
     content: "",
   });
 
+  const currentUser = localStorage.getItem("currentUser");
+
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("notes")) || [];
+    if (!currentUser) {
+      alert("No user logged in");
+      return;
+    }
+    const saved = JSON.parse(localStorage.getItem(`notes-${currentUser}`)) || [];
+    console.log("Loaded notes for", currentUser, saved);
     setNotes(saved);
-  }, []);
+  }, [currentUser]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -34,20 +41,21 @@ function NotesPage() {
     setNewNote({ title: "", category: "", content: "" });
   };
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setNewNote({ ...newNote, [e.target.name]: e.target.value });
+  };
 
   const handleSave = () => {
     const updatedNotes = [...notes, newNote];
     setNotes(updatedNotes);
-    localStorage.setItem("notes", JSON.stringify(updatedNotes));
+    localStorage.setItem(`notes-${currentUser}`, JSON.stringify(updatedNotes));
     handleClose();
   };
 
   return (
     <div style={{ padding: 20 }}>
       <Typography variant="h4" gutterBottom>
-        My Notes
+        My Notes for {currentUser}
       </Typography>
 
       <Grid container spacing={2}>
