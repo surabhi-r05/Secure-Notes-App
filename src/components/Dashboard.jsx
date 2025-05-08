@@ -49,7 +49,10 @@ function Dashboard() {
     }
     loadUserNotes();
   }, [navigate, selectedLabel, currentUser, loadUserNotes]);
-
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const handleAddNote = () => {
     navigate('/edit-note');
   };
@@ -153,8 +156,8 @@ function Dashboard() {
           <button className="menu-btn" onClick={toggleSidebar}>&#9776;</button>
           <h2>{`Welcome, ${currentUser}`}</h2>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <button className="share-btn" onClick={() => { }}>Share</button>
-            <button className="logout-btn" onClick={handleLogout}>Logout</button>
+          <button className="share-btn" onClick={() => navigate('/share')}>Share</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         </div>
 
