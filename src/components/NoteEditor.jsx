@@ -9,6 +9,7 @@ function NoteEditor() {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [label, setLabel] = useState('');
 
   useEffect(() => {
     const currentUser = localStorage.getItem('currentUser');
@@ -24,6 +25,7 @@ function NoteEditor() {
       if (existingNote) {
         setTitle(existingNote.title);
         setContent(existingNote.content);
+        setLabel(existingNote.label || 'Work');
       }
     }
   }, [navigate, noteId]);
@@ -38,7 +40,7 @@ function NoteEditor() {
     if (noteId) {
       // Update existing note
       const updatedNotes = userNotes.map((note) =>
-        note.id === noteId ? { ...note, title, content } : note
+        note.id === noteId ? { ...note, title, content, label } : note
       );
       allNotes[currentUser] = updatedNotes;
     } else {
@@ -47,6 +49,8 @@ function NoteEditor() {
         id: Date.now().toString(),
         title,
         content,
+        label,
+        lastAccessed: new Date(),
       };
       allNotes[currentUser] = [...userNotes, newNote];
     }
@@ -69,7 +73,30 @@ function NoteEditor() {
         value={content}
         onChange={(e) => setContent(e.target.value)}
       />
+      <select value={label} onChange={(e) => setLabel(e.target.value)} className="label-dropdown">
+        <option value="Work">Work</option>
+        <option value="Education">Education</option>
+        <option value="Devices">Devices</option>
+        <option value="Financial">Financial</option>
+        <option value="Entertainment">Entertainment</option>
+      </select>
       <button onClick={handleSave}>Save Note</button>
+      <br/><br/>
+      <button
+        onClick={() => navigate('/dashboard')}
+        style={{
+          backgroundColor: '#e63946',
+          color: 'white',
+          border: 'none',
+          borderRadius: '8px',
+          padding: '10px 20px',
+          marginBottom: '20px',
+          cursor: 'pointer',
+        }}
+      >
+        Back
+      </button>
+
     </div>
   );
 }
